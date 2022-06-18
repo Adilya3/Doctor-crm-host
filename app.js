@@ -22,6 +22,15 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors({ credentials: true, origin: true }))
 // app.use(express.static(path.join(process.env.PWD, 'public')))
 app.use(express.static(path.join(process.env.PWD, 'build' )))
+
+redisClient.on('connect', function(){
+    console.log('Connected to Redis');
+});
+
+redisClient.on('error', function(err) {
+     console.log('Redis error: ' + err);
+});
+
 app.use(
     session({
         name: 'sid',
