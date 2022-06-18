@@ -9,9 +9,9 @@ const redisClient = redis.createClient()
 
 const app = express()
 
-const PORT = process.env.PORT || 5432
+const PORT = process.env.PORT || 3001
 
-// ROutersssqs
+// ROutersssqss
 const userRouter = require('./routes/userRouter')
 const patientRouter = require('./routes/patientRouter')
 const diagramRouter = require('./routes/diagramRouter')
