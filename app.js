@@ -11,7 +11,7 @@ const app = express()
 
 const PORT = process.env.PORT || 5432
 
-// ROutersss
+// ROutersssq
 const userRouter = require('./routes/userRouter')
 const patientRouter = require('./routes/patientRouter')
 const diagramRouter = require('./routes/diagramRouter')
