@@ -69,6 +69,16 @@ class UserController {
             next(e)
         }
     }
+    async setUsers(req, res, next) {
+        try {
+            const users = await User.findAll()
+            return res.json(users)
+        } catch (e) {
+            next(e)
+        }
+    }
 }
+
+
 
 module.exports = new UserController()
