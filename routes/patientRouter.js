@@ -1,13 +1,15 @@
 const router = require('express').Router()
 const bcrypt = require('bcrypt')
-const { Patient, Hystory, Temperature, Presure, Breethe, Pulse, Notation } = require('../db/models')
-
+const jwt = require('jsonwebtoken')
+const { Patient, Hystory, Temperature, Presure, Breethe, Pulse, Notation, User } = require('../db/models')
 router.route('/:id').get(async (req, res) => {
     const id = req.params.id
-
-    const patient = await Patient.findAll({ where: { user_id: id } })
     try {
-        return res.json(patient)
+        const patient = await Patient.findAll({ where: { user_id: id } })
+        if (patient) {
+            return res.json(patient)
+        }
+        return res.sendStatus(500).json({ message: 'nothing' })
     } catch (err) {
         console.log(err)
     }
@@ -38,20 +40,13 @@ router.route('/one').post(async (req, res) => {
         }
     }
 })
-// (
-//     { season_id: req.body.season_id, serial_id: req.body.serial_id },
-//     {
-//         where: {
-//             id: req.body.id,
-//         },
-//     }
-// )
+
 router.route('/exctract').post(async (req, res) => {
-    console.log(req.body)
+   
     const s = await Hystory.update({ exctract_date: req.body.exctract_date }, { where: { patient_id: req.body.id } })
     const patient = await Patient.findAll({ where: { id: req.body.id } })
     const hystory = await Hystory.findAll({ where: { patient_id: req.body.id } })
-    console.log(s)
+    
     // diagrams
     const temperatureDiagram = await Temperature.findAll({ where: { patient_id: req.body.id } })
     const presureDiagram = await Presure.findAll({ where: { patient_id: req.body.id } })
@@ -91,7 +86,10 @@ router.route('/').post(async (req, res) => {
                 console.log(err)
             }
         } else {
-            const curPatient = await Patient.create({ ...req.body.info, user_id: req.session.user.id })
+            console.log(req.cookies, 'rqe')
+            const {refreshToken} = req.cookies
+            const userData =  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
+            const curPatient = await Patient.create({ ...req.body.info, user_id: userData.id })
             const curHystory = await Hystory.create({ ...req.body.sick, patient_id: curPatient.id })
             return res.sendStatus(200)
         }

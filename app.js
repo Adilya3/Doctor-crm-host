@@ -1,17 +1,13 @@
 require('dotenv').config()
 const express = require('express')
 const path = require('path')
-const redis = require('redis')
 const cors = require('cors')
-const session = require('express-session')
-const RedisStore = require('connect-redis')(session)
-const redisClient = redis.createClient()
-
+const cookieParser = require('cookie-parser')
 const app = express()
 
 const PORT = process.env.PORT || 3001
 
-// ROutersssqssq
+// ROuters
 const userRouter = require('./routes/userRouter')
 const patientRouter = require('./routes/patientRouter')
 const diagramRouter = require('./routes/diagramRouter')
@@ -20,31 +16,11 @@ const downloadRouter = require('./routes/downloadRouter')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({ credentials: true, origin: true }))
+app.use(cookieParser())
 // app.use(express.static(path.join(process.env.PWD, 'public')))
 app.use(express.static(path.join(process.env.PWD, 'build' )))
 
-redisClient.on('connect', function(){
-    console.log('Connected to Redis');
-});
 
-redisClient.on('error', function(err) {
-     console.log('Redis error: ' + err);
-});
-
-app.use(
-    session({
-        name: 'sid',
-        store: new RedisStore({ client: redisClient }),
-        saveUninitialized: false,
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-    })
-)
-
-app.use((req, res, next) => {
-    res.locals.user = req.session.user
-    next()
-})
 
 app.use('/user', userRouter)
 app.use('/patient', patientRouter)

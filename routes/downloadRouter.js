@@ -9,10 +9,9 @@ router.route('/:id').get(async (req, res) => {
         try {
             const patient = await Patient.findOne({ where: { id: req.params.id } })
             const hystory = await Hystory.findAll({ where: { patient_id: patient.id } })
-            console.log(hystory)
             let pdfDoc = new PDFDocument()
-            pdfDoc.pipe(fs.createWriteStream('./public/files/sample.pdf'))
-            pdfDoc.font(`./arial.ttf`)
+            pdfDoc.pipe(fs.createWriteStream('./sample.pdf'))
+            pdfDoc.font(`./build/arial.ttf`)
             pdfDoc.text(`Имя: ${patient.firstName}  Фамилия: ${patient.lastName}           День Рождения: ${patient.birthDay}` )
             pdfDoc.moveDown()
             pdfDoc.text(`Адрес проживания: ${patient.address}                       Номер паспорта: ${patient.passport}` )
